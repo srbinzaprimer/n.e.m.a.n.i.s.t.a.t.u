@@ -7,6 +7,13 @@
     "start": "node index.js",
     "dev": "nodemon index.js",
     "prod": "pm2 start ecosystem.config.js",
+    "stop": "pm2 stop discord-bot",
+    "restart": "pm2 restart discord-bot",
+    "logs": "pm2 logs discord-bot",
+    "status": "pm2 status",
+    "monitor": "pm2 monit discord-bot",
+    "railway:start": "node index.js",
+    "railway:build": "echo 'No build step required'",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
