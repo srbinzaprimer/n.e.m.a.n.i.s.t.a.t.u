@@ -116,7 +116,24 @@ const userLinkCounts = new Map();
 
 client.on('ready', () => {
   console.log(`🤖 Bot ${client.user.tag} je spreman!`);
-  console.log(`🛒 Podržani agenti: ${Object.keys(AGENT_PROCESSORS).join(', ')}`);
+  client.user.setStatus('online');
+ // client.user.setActivity('Converting links to KakoBuy', { type: 0 });
+
+   // Postavi aktivnost (igra/streamuje/gleda/sluša)
+   client.user.setActivity('Konvertujem linkove', { 
+    type: 'PLAYING', // PLAYING, STREAMING, LISTENING, WATCHING
+    url: 'https://www.kakobuy.com' // Potrebno samo za STREAMING
+  });
+
+  // Opciono: Postavi custom status
+  client.user.setPresence({
+    activities: [{
+      name: 'Konvertujem linkove',
+      type: 'PLAYING'
+    }],
+    status: 'online'
+  });
+
 });
 
 client.on('messageCreate', async (message) => {
@@ -157,8 +174,7 @@ client.on('messageCreate', async (message) => {
       });
     }
   } catch (error) {
-    console.error('❌ Greška:', error);
-    await message.reply('❌ Došlo je do greške prilikom obrade linkova.').catch(console.error);
+    await message.reply('❌ Došlo je do greške prilikom obrade linkova.').catch(() => {});
   }
 });
 
@@ -167,24 +183,20 @@ async function processUrls(urls) {
   const invalidUrls = [];
 
   for (const url of urls) {
-   // console.log('Processing URL:', url);
-    
     let processed = false;
 
     // Provera za agente
     for (const [agent, processor] of Object.entries(AGENT_PROCESSORS)) {
       if (CONFIG.ALLOWED_DOMAINS[agent] && CONFIG.ALLOWED_DOMAINS[agent].test(url)) {
-        console.log(`Matched agent ${agent} for URL ${url}`);
         try {
           const result = await processor(url);
           if (result) {
-            console.log(`Successfully processed with ${agent}:`, result);
             validLinks.push(result);
             processed = true;
             break;
           }
         } catch (error) {
-          console.error(`Error in ${agent} processor:`, error);
+          // Ignorišemo greške
         }
       }
     }
@@ -238,7 +250,6 @@ async function processKakobuyLink(url) {
       source: 'kakobuy'
     };
   } catch (error) {
-   console.error('Kakobuy processing error:', error);
     return null;
   }
 }
@@ -295,7 +306,6 @@ async function processCnfansLink(url) {
       source: 'cnfans'
     };
   } catch (error) {
-    console.error('Cnfans processing error:', error);
     return null;
   }
 }
@@ -352,7 +362,6 @@ async function processJoyabuyLink(url) {
       source: 'joyabuy'
     };
   } catch (error) {
-    console.error('Joyabuy processing error:', error);
     return null;
   }
 }
@@ -391,7 +400,6 @@ async function processJoyagooLink(url) {
       source: 'joyagoo'
     };
   } catch (error) {
-    console.error('Joyagoo processing error:', error);
     return null;
   }
 }
@@ -406,7 +414,6 @@ async function processPandabuyLink(url) {
     
     return null;
   } catch (error) {
-    console.error('PandaBuy processing error:', error);
     return null;
   }
 }
@@ -463,7 +470,6 @@ async function processMulebuyLink(url) {
       source: 'mulebuy'
     };
   } catch (error) {
-    console.error('Mulebuy processing error:', error);
     return null;
   }
 }
@@ -501,7 +507,6 @@ async function processSuperbuyLink(url) {
     
     return null;
   } catch (error) {
-    console.error('Superbuy processing error:', error);
     return null;
   }
 }
@@ -563,7 +568,6 @@ async function processCSSBuyLink(url) {
     
     return null;
   } catch (error) {
-    console.error('CSSBuy processing error:', error);
     return null;
   }
 }
@@ -593,7 +597,6 @@ async function processWegobuyLink(url) {
     }
     return null;
   } catch (error) {
-    console.error('Wegobuy processing error:', error);
     return null;
   }
 }
@@ -669,7 +672,6 @@ async function processHagobuyLink(url) {
     }
     return null;
   } catch (error) {
-    console.error('Hagobuy processing error:', error);
     return null;
   }
 }
@@ -727,7 +729,6 @@ async function processBasetaoLink(url) {
     
     return null;
   } catch (error) {
-    console.error('Basetao processing error:', error);
     return null;
   }
 }
@@ -750,7 +751,6 @@ async function processLoongbuyLink(url) {
       source: 'loongbuy'
     };
   } catch (error) {
-    console.error('Loongbuy processing error:', error);
     return null;
   }
 }
@@ -771,7 +771,6 @@ async function processHoobuyLink(url) {
       source: 'hoobuy'
     };
   } catch (error) {
-    console.error('Hoobuy processing error:', error);
     return null;
   }
 }
@@ -809,7 +808,6 @@ async function processAcbuyLink(url) {
       source: 'acbuy'
     };
   } catch (error) {
-    console.error('AcBuy processing error:', error);
     return null;
   }
 }
@@ -824,7 +822,6 @@ function cleanWeidianUrl(url) {
     const cleanItemId = itemId.split('?')[0];
     return `https://weidian.com/item.html?itemID=${cleanItemId}`;
   } catch (error) {
-    console.error('Weidian URL cleaning error:', error);
     return url;
   }
 }
@@ -850,7 +847,6 @@ async function processAllchinabuyLink(url) {
       source: 'allchinabuy'
     };
   } catch (error) {
-    console.error('Allchinabuy processing error:', error);
     return null;
   }
 }
@@ -889,7 +885,6 @@ async function processOrientdigLink(url) {
       source: 'orientdig'
     };
   } catch (error) {
-    console.error('Orientdig processing error:', error);
     return null;
   }
 }
@@ -930,7 +925,6 @@ async function processOopbuyLink(url) {
     
     return null;
   } catch (error) {
-    console.error('Oopbuy processing error:', error);
     return null;
   }
 }
@@ -972,7 +966,6 @@ async function processOotdbuyLink(url) {
     
     return null;
   } catch (error) {
-    console.error('Ootdbuy processing error:', error);
     return null;
   }
 }
@@ -1011,7 +1004,6 @@ async function processLovegobuyLink(url) {
       source: 'lovegobuy'
     };
   } catch (error) {
-    console.error('Lovegobuy processing error:', error);
     return null;
   }
 }
@@ -1043,7 +1035,6 @@ function cleanUrl(url, platform) {
         return null;
     }
   } catch (error) {
-    console.error('URL cleaning error:', error);
     return null;
   }
 }
@@ -1062,7 +1053,6 @@ function getPlatformFromUrl(url) {
     
     return null;
   } catch (error) {
-    console.error('Platform detection error:', error);
     return null;
   }
 }
@@ -1082,7 +1072,7 @@ async function punishUser(message) {
       allowedMentions: { users: [member.id] }
     });
   } catch (error) {
-    console.error('Kažnjavanje greška:', error.message);
+    // Ignorišemo greške
   }
 }
 
@@ -1148,7 +1138,7 @@ function generateLinks(validLinks) {
           .setEmoji(CONFIG.EMOJI_MAPPING.kakobuy)
       );
     } catch(error) {
-      console.error('Link generation error:', error);  
+      // Ignorišemo greške
     }
   });
 
@@ -1169,11 +1159,8 @@ async function processPandabuyLinkStandard(url) {
     const encodedUrl = urlObj.searchParams.get('url');
     if (!encodedUrl) return null;
     
-    console.log('Encoded URL:', encodedUrl);
-    
     // Prvo dekodiramo URL-encoded string
     let decodedUrl = decodeURIComponent(encodedUrl);
-    console.log('After URL decode:', decodedUrl);
     
     // Ako nije validan URL, pokušavamo base64 dekodiranje
     if (!decodedUrl.match(/^https?:\/\//)) {
@@ -1187,31 +1174,22 @@ async function processPandabuyLinkStandard(url) {
           .replace(/%3D/g, '=')
           .replace(/\s/g, '');
         
-        console.log('Cleaned string:', cleaned);
-        
         // Dodajemo padding ako je potrebno
         const padding = cleaned.length % 4;
         const padded = padding ? cleaned + '='.repeat(4 - padding) : cleaned;
         
-        console.log('Padded string:', padded);
-        
         // Pokušavamo base64 dekodiranje
         decodedUrl = Buffer.from(padded, 'base64').toString('utf-8');
-        console.log('After base64 decode:', decodedUrl);
         
         // Ako i dalje nije validan URL, pokušavamo sa raw stringom
         if (!decodedUrl.match(/^https?:\/\//)) {
-          // Pokušavamo da dekodiramo raw string
           try {
             decodedUrl = decodeURIComponent(cleaned);
-            console.log('After raw string decode:', decodedUrl);
           } catch (e) {
-            console.log('Raw string decode failed:', e);
             decodedUrl = cleaned;
           }
         }
       } catch (base64Error) {
-        console.log('Base64 decode error:', base64Error);
         // Pokušavamo da dekodiramo originalni string
         try {
           decodedUrl = decodeURIComponent(encodedUrl);
@@ -1223,13 +1201,11 @@ async function processPandabuyLinkStandard(url) {
     
     // Proveravamo da li je finalni URL validan
     if (!decodedUrl.match(/^https?:\/\//)) {
-      console.log('Final URL not valid:', decodedUrl);
       return null;
     }
     
     const platform = getPlatformFromUrl(decodedUrl);
     if (!platform) {
-      console.log('Could not determine platform from:', decodedUrl);
       return null;
     }
     
@@ -1241,7 +1217,6 @@ async function processPandabuyLinkStandard(url) {
       source: 'pandabuy'
     };
   } catch (error) {
-    console.error('PandaBuy standard processing error:', error);
     return null;
   }
 }
@@ -1328,14 +1303,13 @@ async function processPandabuyLinkViaAPI(url) {
 }
 
 client.login(process.env.DISCORD_TOKEN).catch(err => {
-  console.error('❌ Failed to login:', err);
   process.exit(1);
 });
 
 process.on('unhandledRejection', error => {
-  console.error('Unhandled promise rejection:', error);
+  // Ignorišemo greške
 });
 
 process.on('uncaughtException', error => {
-  console.error('Uncaught exception:', error);
+  // Ignorišemo greške
 });
